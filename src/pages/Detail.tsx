@@ -1,4 +1,5 @@
-import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router';
+import { QueryClient, useQuery } from '@tanstack/react-query';
+import { LoaderFunctionArgs, useNavigate, useParams } from 'react-router';
 
 interface Pokemon {
   name: string;
@@ -9,41 +10,43 @@ interface Pokemon {
   weight: number;
 }
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const name = params.name as string;
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    alert(error);
-    return null;
-  }
+const fetchPokemon = async (name: string): Promise<Pokemon> => {
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  const data: Pokemon = await response.json();
+  return data;
 };
 
-const Detail = () => {
-  const pokemon = useLoaderData<Pokemon>();
-  const navigate = useNavigate();
+const pokemonQuery = (name: string) => ({
+  queryKey: ['pokemon', name],
+  queryFn: () => fetchPokemon(name),
+});
 
-  if (!pokemon) {
+export const loader =
+  (queryClient: QueryClient) =>
+  async ({ params }: LoaderFunctionArgs) => {
+    const name = params.name as string;
+    const query = pokemonQuery(name);
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-2xl font-bold mb-4">오류</h1>
-        <p>포켓몬 데이터를 불러올 수 없습니다. 나중에 다시 시도해 주세요.</p>
-      </div>
+      queryClient.getQueryData(query.queryKey) ??
+      (await queryClient.fetchQuery(query))
     );
-  }
+  };
+
+const Detail = () => {
+  const params = useParams();
+  const { data: pokemon } = useQuery(pokemonQuery(params.name ?? ''));
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">{pokemon.name}</h1>
+      <h1 className="text-2xl font-bold mb-4">{pokemon?.name}</h1>
       <img
-        src={pokemon.sprites.front_default}
-        alt={pokemon.name}
+        src={pokemon?.sprites?.front_default}
+        alt={pokemon?.name}
         className="w-40 h-40 mb-4"
       />
-      <p>키: {pokemon.height}</p>
-      <p>몸무게: {pokemon.weight}</p>
+      <p>키: {pokemon?.height}</p>
+      <p>몸무게: {pokemon?.weight}</p>
       <button
         onClick={() => navigate(-1)}
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"

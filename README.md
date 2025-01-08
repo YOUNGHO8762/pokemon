@@ -1,4 +1,4 @@
-# react-router-loader-dabble
+# react-router-loader-and-tanstack-query-dabble
 
 ## Installation
 
