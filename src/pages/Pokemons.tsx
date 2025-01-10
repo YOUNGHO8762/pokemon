@@ -1,35 +1,14 @@
-import { QueryClient } from '@tanstack/react-query';
-import { Link, useLoaderData } from 'react-router';
-
-interface PokemonsResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Pokemon[];
-}
-
-interface Pokemon {
-  name: string;
-  url: string;
-}
-
-const fetchPokemons = async (): Promise<Pokemon[]> => {
-  const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10');
-  const data: PokemonsResponse = await response.json();
-  return data.results;
-};
+import { QueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { Link } from 'react-router';
+import { fetchPokemons } from '@/api/pokemonApi';
 
 const pokemonsQuery = () => ({
   queryKey: ['pokemons'],
   queryFn: fetchPokemons,
 });
 
-export const loader = async (queryClient: QueryClient) => {
-  const query = pokemonsQuery();
-  return (
-    queryClient.getQueryData(query.queryKey) ??
-    (await queryClient.fetchQuery(query))
-  );
+export const loader = (queryClient: QueryClient) => async () => {
+  await queryClient.ensureQueryData(pokemonsQuery());
 };
 
 const getPokemonImageUrl = (url: string): string => {
@@ -39,7 +18,7 @@ const getPokemonImageUrl = (url: string): string => {
 };
 
 const Pokemons = () => {
-  const pokemons = useLoaderData<Pokemon[]>();
+  const { data: pokemons } = useSuspenseQuery(pokemonsQuery());
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

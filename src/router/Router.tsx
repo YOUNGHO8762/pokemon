@@ -12,12 +12,12 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Pokemons />,
-        loader: () => listLoader(queryClient),
+        loader: listLoader(queryClient),
       },
       {
-        path: '/:name',
+        path: ':name',
         element: <Detail />,
-        loader: () => detailLoader(queryClient),
+        loader: detailLoader(queryClient),
       },
     ],
   },
