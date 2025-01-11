@@ -1,24 +1,51 @@
-import { QueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
+import {
+  infiniteQueryOptions,
+  QueryClient,
+  useSuspenseInfiniteQuery,
+} from '@tanstack/react-query';
 import { fetchPokemons } from '@/api/pokemonApi';
+import useInView from '@/hooks/useInView';
 
-const pokemonsQuery = () => ({
-  queryKey: ['pokemons'],
-  queryFn: fetchPokemons,
-});
+const pokemonsQuery = () =>
+  infiniteQueryOptions({
+    queryKey: ['pokemons'],
+    queryFn: ({ pageParam }) => fetchPokemons(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.next;
+      return nextPage
+        ? Number(new URL(nextPage).searchParams.get('offset'))
+        : undefined;
+    },
+  });
 
 export const loader = (queryClient: QueryClient) => async () => {
-  await queryClient.ensureQueryData(pokemonsQuery());
+  await queryClient.ensureInfiniteQueryData(pokemonsQuery());
 };
 
 const getPokemonImageUrl = (url: string): string => {
-  const parts = url.split('/');
-  const key = parts[parts.length - 2];
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${key}.png`;
+  const id = url.split('/').slice(-2, -1)[0];
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 };
 
 const Pokemons = () => {
-  const { data: pokemons } = useSuspenseQuery(pokemonsQuery());
+  const { data, fetchNextPage } = useSuspenseInfiniteQuery(pokemonsQuery());
+  const { ref, isInView } = useInView<HTMLDivElement>();
+
+  useEffect(() => {
+    if (!isInView) {
+      return;
+    }
+
+    fetchNextPage();
+  }, [isInView, fetchNextPage]);
+
+  const pokemons = useMemo(
+    () => data.pages.flatMap((page) => page.results),
+    [data]
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -37,6 +64,7 @@ const Pokemons = () => {
           </li>
         ))}
       </ul>
+      <div ref={ref} />
     </div>
   );
 };

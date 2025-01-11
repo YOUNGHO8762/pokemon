@@ -1,12 +1,14 @@
 import { axiosInstance } from '@/api/axiosInstance';
-import { Pokemon, PokemonsResponse, PokemonSummary } from '@/types/pokemon';
+import { Pokemon, PokemonsResponse } from '@/types/pokemon';
 import { POKEMON_URL } from '@/constants/apiUrl';
 
-export const fetchPokemons = async (): Promise<PokemonSummary[]> => {
+export const fetchPokemons = async (
+  offset: number
+): Promise<PokemonsResponse> => {
   const { data } = await axiosInstance.get<PokemonsResponse>(POKEMON_URL, {
-    params: { limit: 10 },
+    params: { limit: 20, offset },
   });
-  return data.results;
+  return data;
 };
 
 export const fetchPokemon = async (name: string): Promise<Pokemon> => {

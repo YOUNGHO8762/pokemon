@@ -1,11 +1,16 @@
-import { QueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router';
+import {
+  QueryClient,
+  queryOptions,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { fetchPokemon } from '@/api/pokemonApi';
 
-const pokemonQuery = (name: string) => ({
-  queryKey: ['pokemon', name],
-  queryFn: () => fetchPokemon(name),
-});
+const pokemonQuery = (name: string) =>
+  queryOptions({
+    queryKey: ['pokemon', name],
+    queryFn: () => fetchPokemon(name),
+  });
 
 export const loader =
   (queryClient: QueryClient) =>
