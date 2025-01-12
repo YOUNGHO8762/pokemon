@@ -1,9 +1,9 @@
-import { get } from '@/api/axiosInstance';
+import { get } from '@/api';
 import { Pokemon, PokemonsResponse } from '@/types/pokemon';
 import { POKEMON_URL } from '@/constants/apiUrl';
 
 export const fetchPokemons = async (offset: number) => {
-  return get<PokemonsResponse>(POKEMON_URL, { limit: 20, offset });
+  return get<PokemonsResponse>(POKEMON_URL, { params: { limit: 20, offset } });
 };
 
 export const fetchPokemon = async (name: string): Promise<Pokemon> => {
