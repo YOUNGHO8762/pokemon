@@ -1,9 +1,16 @@
-import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router';
+import {
+  LoaderFunctionArgs,
+  NavigationType,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+} from 'react-router';
 import {
   QueryClient,
   queryOptions,
   useSuspenseQuery,
 } from '@tanstack/react-query';
+import { useNavigationCallback } from '@/hooks/useNavigationCallback';
 import { fetchPokemon } from '@/api/pokemonApi';
 
 const pokemonQuery = (name: string) =>
@@ -28,6 +35,10 @@ const Detail = () => {
     ReturnType<ReturnType<typeof loader>>
   >;
   const { data: pokemon } = useSuspenseQuery(pokemonQuery(name));
+  const { state: scrollY } = useLocation();
+  useNavigationCallback(NavigationType.Pop, () =>
+    sessionStorage.setItem('scrollY', scrollY)
+  );
   const navigate = useNavigate();
 
   return (
