@@ -8,7 +8,7 @@ export const cn = (...inputs: ClassValue[]) => {
 export const getNthSubstring = (
   string: string,
   separator: string,
-  index: number
+  index: number,
 ): string | undefined => {
   const parts = string.split(separator);
   const adjustedIndex = index < 0 ? parts.length + index : index;

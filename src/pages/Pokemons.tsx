@@ -14,7 +14,7 @@ const pokemonsQuery = () =>
     queryKey: ['pokemons'],
     queryFn: ({ pageParam }) => fetchPokemons(pageParam),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: lastPage => {
       const nextPage = lastPage.next;
       return nextPage
         ? Number(new URL(nextPage).searchParams.get('offset'))
@@ -38,8 +38,8 @@ const Pokemons = () => {
   const parentRef = useRef<HTMLDivElement>(null);
 
   const pokemons = useMemo(
-    () => data.pages.flatMap((page) => page.results),
-    [data]
+    () => data.pages.flatMap(page => page.results),
+    [data],
   );
 
   const rowVirtualizer = useVirtualizer({
@@ -91,12 +91,12 @@ const Pokemons = () => {
           height: `${rowVirtualizer.getTotalSize()}px`,
         }}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+        {rowVirtualizer.getVirtualItems().map(virtualRow => {
           const pokemon = pokemons[virtualRow.index];
           return (
             <li
               key={virtualRow.index}
-              className="flex items-center justify-center absolute top-0 left-1/2 cursor-pointer"
+              className="absolute left-1/2 top-0 flex cursor-pointer items-center justify-center"
               style={{
                 height: `${virtualRow.size}px`,
                 transform: `translate(-50%, ${virtualRow.start}px)`,
@@ -106,7 +106,7 @@ const Pokemons = () => {
               <img
                 src={getPokemonImageUrl(pokemon.url)}
                 alt={pokemon.name}
-                className="size-10 mr-2"
+                className="mr-2 size-10"
               />
               {pokemon.name}
             </li>

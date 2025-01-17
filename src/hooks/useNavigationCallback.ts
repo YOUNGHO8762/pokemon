@@ -4,10 +4,10 @@ import router from '@/router/Router';
 
 export const useNavigationCallback = (
   navigationType: NavigationType,
-  callback: () => void
+  callback: () => void,
 ) => {
   useEffect(() => {
-    const unsubscribe = router.subscribe((state) => {
+    const unsubscribe = router.subscribe(state => {
       if (state.historyAction === navigationType) {
         callback();
       }
