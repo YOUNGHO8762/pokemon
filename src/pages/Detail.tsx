@@ -36,8 +36,9 @@ const Detail = () => {
   >;
   const { data: pokemon } = useSuspenseQuery(pokemonQuery(name));
   const { state: scrollY } = useLocation();
-  useNavigationCallback(NavigationType.Pop, () =>
-    sessionStorage.setItem('scrollY', scrollY),
+  useNavigationCallback(
+    () => sessionStorage.setItem('scrollY', scrollY),
+    NavigationType.Pop,
   );
   const navigate = useNavigate();
 

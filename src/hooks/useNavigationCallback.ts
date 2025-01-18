@@ -3,12 +3,12 @@ import { NavigationType } from 'react-router';
 import router from '@/router/Router';
 
 export const useNavigationCallback = (
-  navigationType: NavigationType,
   callback: () => void,
+  navigationType?: NavigationType,
 ) => {
   useEffect(() => {
     const unsubscribe = router.subscribe(state => {
-      if (state.historyAction === navigationType) {
+      if (!navigationType || state.historyAction === navigationType) {
         callback();
       }
     });
