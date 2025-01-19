@@ -1,26 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  infiniteQueryOptions,
-  QueryClient,
-  useSuspenseInfiniteQuery,
-} from '@tanstack/react-query';
+import { QueryClient, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { fetchPokemons } from '@/api/pokemonApi';
+import { pokemonsQuery } from '@/queries/pokemonQueries';
 import { getNthSubstring } from '@/lib/utils';
-
-const pokemonsQuery = () =>
-  infiniteQueryOptions({
-    queryKey: ['pokemons'],
-    queryFn: ({ pageParam }) => fetchPokemons(pageParam),
-    initialPageParam: 0,
-    getNextPageParam: lastPage => {
-      const nextPage = lastPage.next;
-      return nextPage
-        ? Number(new URL(nextPage).searchParams.get('offset'))
-        : undefined;
-    },
-  });
 
 export const loader = (queryClient: QueryClient) => async () => {
   await queryClient.ensureInfiniteQueryData(pokemonsQuery());

@@ -1,13 +1,13 @@
-import { get } from '@/api';
+import { get } from '@/api/httpClient';
 import { Pokemon, PokemonsResponse } from '@/types/pokemon';
-import { POKEMON_URL } from '@/constants/apiUrl';
+import { POKEMON } from '@/api/endpoints';
 
 export const fetchPokemons = async (
   offset: number,
 ): Promise<PokemonsResponse> => {
-  return get<PokemonsResponse>(POKEMON_URL, { params: { limit: 30, offset } });
+  return get<PokemonsResponse>(POKEMON, { params: { limit: 30, offset } });
 };
 
 export const fetchPokemon = async (name: string): Promise<Pokemon> => {
-  return get<Pokemon>(`${POKEMON_URL}/${name}`);
+  return get<Pokemon>(`${POKEMON}/${name}`);
 };

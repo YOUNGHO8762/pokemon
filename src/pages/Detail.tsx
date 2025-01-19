@@ -5,19 +5,9 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router';
-import {
-  QueryClient,
-  queryOptions,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { QueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { pokemonQuery } from '@/queries/pokemonQueries';
 import { useNavigationCallback } from '@/hooks/useNavigationCallback';
-import { fetchPokemon } from '@/api/pokemonApi';
-
-const pokemonQuery = (name: string) =>
-  queryOptions({
-    queryKey: ['pokemon', name],
-    queryFn: () => fetchPokemon(name),
-  });
 
 export const loader =
   (queryClient: QueryClient) =>
