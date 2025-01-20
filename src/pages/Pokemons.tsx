@@ -5,6 +5,8 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { pokemonsQuery } from '@/queries/pokemonQueries';
 import { getNthSubstring } from '@/lib/utils';
 
+export const POKEMON_ITEM_SIZE = 40;
+
 export const loader = (queryClient: QueryClient) => async () => {
   await queryClient.ensureInfiniteQueryData(pokemonsQuery());
 };
@@ -27,8 +29,8 @@ const Pokemons = () => {
 
   const rowVirtualizer = useVirtualizer({
     count: pokemons.length,
-    estimateSize: () => 40,
-    overscan: 3,
+    estimateSize: () => POKEMON_ITEM_SIZE,
+    overscan: 5,
     getScrollElement: () => parentRef.current,
   });
 
@@ -63,7 +65,9 @@ const Pokemons = () => {
   }, [rowVirtualizer]);
 
   const handleNavigation = (name: string) => {
-    navigate(name, { state: rowVirtualizer.scrollElement?.scrollTop });
+    navigate(name, {
+      state: rowVirtualizer.scrollElement?.scrollTop,
+    });
   };
 
   return (
@@ -89,7 +93,11 @@ const Pokemons = () => {
               <img
                 src={getPokemonImageUrl(pokemon.url)}
                 alt={pokemon.name}
-                className="mr-2 size-10"
+                style={{
+                  width: `${POKEMON_ITEM_SIZE}px`,
+                  height: `${POKEMON_ITEM_SIZE}px`,
+                }}
+                className="mr-2"
               />
               {pokemon.name}
             </li>

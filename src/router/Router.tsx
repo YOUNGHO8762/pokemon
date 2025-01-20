@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router';
-import queryClient from '@/api/queryClient';
+import queryClient from '@/queries/queryClient';
 import Error from '@/pages/Error';
 import Detail, { loader as detailLoader } from '@/pages/Detail';
 import Pokemons, { loader as listLoader } from '@/pages/Pokemons';
