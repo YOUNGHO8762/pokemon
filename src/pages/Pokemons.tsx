@@ -3,12 +3,23 @@ import { useNavigate } from 'react-router';
 import { QueryClient, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { pokemonsQuery } from '@/queries/pokemonQueries';
+import { DEFAULT_LIMIT } from '@/api/pokemonApis';
 import { getNthSubstring } from '@/lib/utils';
 
-export const POKEMON_ITEM_SIZE = 40;
+const POKEMON_ITEM_SIZE = 40;
+
+const calculateLimit = (scrollY: string | null): number => {
+  if (!scrollY) {
+    return DEFAULT_LIMIT;
+  }
+
+  return Math.round(Number(scrollY) / POKEMON_ITEM_SIZE) + DEFAULT_LIMIT;
+};
 
 export const loader = (queryClient: QueryClient) => async () => {
-  await queryClient.ensureInfiniteQueryData(pokemonsQuery());
+  const scrollY = sessionStorage.getItem('scrollY');
+  const limit = calculateLimit(scrollY);
+  await queryClient.ensureInfiniteQueryData(pokemonsQuery(limit));
 };
 
 const getPokemonImageUrl = (url: string): string => {
@@ -65,9 +76,7 @@ const Pokemons = () => {
   }, [rowVirtualizer]);
 
   const handleNavigation = (name: string) => {
-    navigate(name, {
-      state: rowVirtualizer.scrollElement?.scrollTop,
-    });
+    navigate(name, { state: rowVirtualizer.scrollElement?.scrollTop });
   };
 
   return (
