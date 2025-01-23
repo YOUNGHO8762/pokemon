@@ -6,7 +6,7 @@ import {
   useNavigate,
 } from 'react-router';
 import { QueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { pokemonQuery } from '@/queries/pokemonQueries';
+import pokemonQueries from '@/queries/pokemonQueries';
 import { useNavigationCallback } from '@/hooks/useNavigationCallback';
 
 export const loader =
@@ -16,7 +16,7 @@ export const loader =
     if (!name) {
       throw new Error('No Pokémon name provided');
     }
-    await queryClient.ensureQueryData(pokemonQuery(name));
+    await queryClient.ensureQueryData(pokemonQueries.detail(name));
     return { name };
   };
 
@@ -24,7 +24,7 @@ const Detail = () => {
   const { name } = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof loader>>
   >;
-  const { data: pokemon } = useSuspenseQuery(pokemonQuery(name));
+  const { data: pokemon } = useSuspenseQuery(pokemonQueries.detail(name));
   const { state: scrollY } = useLocation();
   useNavigationCallback(
     () => sessionStorage.setItem('scrollY', scrollY),

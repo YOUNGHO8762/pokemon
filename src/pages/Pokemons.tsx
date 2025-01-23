@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { QueryClient, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { pokemonsQuery } from '@/queries/pokemonQueries';
+import pokemonQueries from '@/queries/pokemonQueries';
 import { DEFAULT_LIMIT } from '@/api/pokemonApis';
 import { getNthSubstring } from '@/lib/utils';
 
@@ -19,7 +19,7 @@ const calculateLimit = (scrollY: string | null): number => {
 export const loader = (queryClient: QueryClient) => async () => {
   const scrollY = sessionStorage.getItem('scrollY');
   const limit = calculateLimit(scrollY);
-  await queryClient.ensureInfiniteQueryData(pokemonsQuery(limit));
+  await queryClient.ensureInfiniteQueryData(pokemonQueries.list(limit));
 };
 
 const getPokemonImageUrl = (url: string): string => {
@@ -29,7 +29,7 @@ const getPokemonImageUrl = (url: string): string => {
 
 const Pokemons = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(pokemonsQuery());
+    useSuspenseInfiniteQuery(pokemonQueries.list());
   const navigate = useNavigate();
   const parentRef = useRef<HTMLDivElement>(null);
 

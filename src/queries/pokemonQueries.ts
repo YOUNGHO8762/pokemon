@@ -9,18 +9,24 @@ const extractNextPageOffset = (lastPage: PokemonsResponse) => {
     : undefined;
 };
 
-export const pokemonsQuery = (limit = DEFAULT_LIMIT) =>
-  infiniteQueryOptions({
-    queryKey: ['pokemons'],
-    queryFn: ({ pageParam }) => {
-      return fetchPokemons(pageParam, limit);
-    },
-    initialPageParam: 0,
-    getNextPageParam: extractNextPageOffset,
-  });
+const pokemonQueries = {
+  all: () => ['pokemon'],
+  lists: () => [...pokemonQueries.all(), 'list'],
+  list: (limit = DEFAULT_LIMIT) =>
+    infiniteQueryOptions({
+      queryKey: [...pokemonQueries.lists()],
+      queryFn: ({ pageParam }) => {
+        return fetchPokemons(pageParam, limit);
+      },
+      initialPageParam: 0,
+      getNextPageParam: extractNextPageOffset,
+    }),
+  details: () => [...pokemonQueries.all(), 'detail'],
+  detail: (name: string) =>
+    queryOptions({
+      queryKey: [...pokemonQueries.lists(), name],
+      queryFn: () => fetchPokemon(name),
+    }),
+};
 
-export const pokemonQuery = (name: string) =>
-  queryOptions({
-    queryKey: ['pokemon', name],
-    queryFn: () => fetchPokemon(name),
-  });
+export default pokemonQueries;
