@@ -4,27 +4,26 @@ import { QueryClient, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import pokemonQueries from '@/queries/pokemonQueries';
 import { DEFAULT_LIMIT } from '@/api/pokemonApis';
-import { getNthSubstring } from '@/lib/utils';
+import { getNthSubstring, getStartIndexFromScroll } from '@/lib/utils';
 
 const POKEMON_ITEM_SIZE = 40;
 
-const calculateLimit = (scrollY: string | null): number => {
-  if (!scrollY) {
-    return DEFAULT_LIMIT;
-  }
+export const getPokemonImageUrl = (url: string): string => {
+  const id = getNthSubstring(url, '/', -2);
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+};
 
-  return Math.round(Number(scrollY) / POKEMON_ITEM_SIZE) + DEFAULT_LIMIT;
+export const calculateLimit = (scrollY: string | null): number => {
+  return scrollY
+    ? getStartIndexFromScroll(Number(scrollY), POKEMON_ITEM_SIZE) +
+        DEFAULT_LIMIT
+    : DEFAULT_LIMIT;
 };
 
 export const loader = (queryClient: QueryClient) => async () => {
   const scrollY = sessionStorage.getItem('scrollY');
   const limit = calculateLimit(scrollY);
   await queryClient.ensureInfiniteQueryData(pokemonQueries.list(limit));
-};
-
-const getPokemonImageUrl = (url: string): string => {
-  const id = getNthSubstring(url, '/', -2);
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 };
 
 const Pokemons = () => {

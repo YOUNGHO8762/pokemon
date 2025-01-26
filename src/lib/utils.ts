@@ -15,3 +15,7 @@ export const getNthSubstring = (
 
   return parts[adjustedIndex];
 };
+
+export const getStartIndexFromScroll = (scroll: number, itemSize: number) => {
+  return Math.max(0, Math.round(scroll / itemSize));
+};
