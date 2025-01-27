@@ -18,10 +18,11 @@ export const getWithSchema = async <T>(
   schema: ZodSchema<T>,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
-  try {
-    return schema.parse(await get<T>(url, config));
-  } catch (error) {
-    console.error(error);
+  const result = schema.safeParse(await get<T>(url, config));
+
+  if (!result.success) {
     throw new Error('Schema validation failed');
   }
+
+  return result.data;
 };
