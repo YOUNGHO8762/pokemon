@@ -70,7 +70,12 @@ const Pokemons = () => {
 
   useEffect(() => {
     const scrollY = sessionStorage.getItem('scrollY');
-    rowVirtualizer.scrollToOffset(scrollY ? Number(scrollY) : 0);
+
+    if (!scrollY) {
+      return;
+    }
+
+    rowVirtualizer.scrollToOffset(Number(scrollY));
     sessionStorage.removeItem('scrollY');
   }, [rowVirtualizer]);
 
