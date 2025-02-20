@@ -1,28 +1,34 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
 import { ZodSchema } from 'zod';
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
+class HttpClient {
+  private instance;
 
-export const get = async <T>(
-  url: string,
-  config?: AxiosRequestConfig,
-): Promise<T> => {
-  const { data } = await instance.get<T>(url, config);
-  return data;
-};
-
-export const getWithSchema = async <T>(
-  url: string,
-  schema: ZodSchema<T>,
-  config?: AxiosRequestConfig,
-): Promise<T> => {
-  const result = schema.safeParse(await get<T>(url, config));
-
-  if (!result.success) {
-    throw new Error('Schema validation failed');
+  constructor(config?: CreateAxiosDefaults) {
+    this.instance = axios.create(config);
   }
 
-  return result.data;
-};
+  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const { data } = await this.instance.get<T>(url, config);
+    return data;
+  }
+
+  public async getAndValidate<T>(
+    url: string,
+    schema: ZodSchema<T>,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
+    const response = await this.get<T>(url, config);
+    const { success, data } = schema.safeParse(response);
+
+    if (!success) {
+      throw new Error('Schema validation failed');
+    }
+
+    return data;
+  }
+}
+
+export const httpClient = new HttpClient({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
