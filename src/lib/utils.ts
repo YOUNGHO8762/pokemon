@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -18,4 +19,21 @@ export const getNthSubstring = (
 
 export const getStartIndexFromScroll = (scroll: number, itemSize: number) => {
   return Math.max(0, Math.round(scroll / itemSize));
+};
+
+export const hasErrorMessage = (
+  error: unknown,
+): error is { message: string } => {
+  return typeof error === 'object' && error !== null && 'message' in error;
+};
+
+export const extractErrorMessage = (
+  error: unknown,
+  defaultMessage = 'Unexpected error',
+): string => {
+  if (isAxiosError(error) || hasErrorMessage(error)) {
+    return error.message;
+  }
+
+  return defaultMessage;
 };
