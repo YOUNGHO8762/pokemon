@@ -75,8 +75,10 @@ const Pokemons = () => {
       return;
     }
 
-    rowVirtualizer.scrollToOffset(Number(scrollY));
-    sessionStorage.removeItem('scrollY');
+    (async () => {
+      await rowVirtualizer.scrollToOffset(Number(scrollY));
+      sessionStorage.removeItem('scrollY');
+    })();
   }, [rowVirtualizer]);
 
   const handleNavigation = (name: string) => {
