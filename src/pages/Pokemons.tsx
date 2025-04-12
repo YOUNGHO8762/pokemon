@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { QueryClient, useSuspenseInfiniteQuery } from '@tanstack/react-query';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { QueryClient } from '@tanstack/react-query';
 import pokemonQueries from '@/queries/pokemonQueries';
 import { DEFAULT_LIMIT } from '@/api/pokemonApis';
 import { getNthSubstring, getStartIndexFromScroll } from '@/lib/utils';
+import { usePokemonList } from '@/hooks/usePokemons';
+import { useInfiniteVirtualizer } from '@/hooks/useInfiniteVirtualizer';
+import { useRestoreVirtualScroll } from '@/hooks/useRestoreVirtualScroll';
 
 const POKEMON_ITEM_SIZE = 40;
 
@@ -27,81 +28,40 @@ export const loader = (queryClient: QueryClient) => async () => {
 };
 
 const Pokemons = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(pokemonQueries.list());
-  const navigate = useNavigate();
-  const parentRef = useRef<HTMLDivElement>(null);
-
-  const pokemons = useMemo(
-    () => data.pages.flatMap(page => page.results),
-    [data],
-  );
-
-  const rowVirtualizer = useVirtualizer({
-    count: pokemons.length,
-    estimateSize: () => POKEMON_ITEM_SIZE,
-    overscan: 5,
-    getScrollElement: () => parentRef.current,
-  });
-
-  useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
-
-    if (!lastItem) {
-      return;
-    }
-
-    if (
-      lastItem.index >= pokemons.length - 1 &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
+  const { pokemons, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePokemonList();
+  const { ref, virtualizer } = useInfiniteVirtualizer<HTMLDivElement>({
+    totalCount: pokemons.length,
+    itemHeight: POKEMON_ITEM_SIZE,
+    overscan: 20,
     hasNextPage,
-    fetchNextPage,
-    pokemons.length,
     isFetchingNextPage,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    rowVirtualizer.getVirtualItems(),
-  ]);
-
-  useEffect(() => {
-    const scrollY = sessionStorage.getItem('scrollY');
-
-    if (!scrollY) {
-      return;
-    }
-
-    (async () => {
-      await rowVirtualizer.scrollToOffset(Number(scrollY));
-      sessionStorage.removeItem('scrollY');
-    })();
-  }, [rowVirtualizer]);
+    fetchNextPage,
+  });
+  useRestoreVirtualScroll(virtualizer, 'scrollY');
+  const navigate = useNavigate();
 
   const handleNavigation = (name: string) => {
-    navigate(name, { state: rowVirtualizer.scrollElement?.scrollTop });
+    navigate(name, { state: virtualizer.scrollElement?.scrollTop });
   };
 
   return (
-    <div ref={parentRef} className="h-screen w-full overflow-auto bg-gray-100">
+    <div ref={ref} className="h-screen w-full overflow-auto bg-gray-100">
       <ul
         className="relative w-full"
         style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
+          height: `${virtualizer.getTotalSize()}px`,
         }}
       >
-        {rowVirtualizer.getVirtualItems().map(virtualRow => {
-          const pokemon = pokemons[virtualRow.index];
+        {virtualizer.getVirtualItems().map(({ index, size, start }) => {
+          const pokemon = pokemons[index];
           return (
             <li
-              key={virtualRow.index}
+              key={index}
               className="absolute left-1/2 top-0 flex cursor-pointer items-center justify-center"
               style={{
-                height: `${virtualRow.size}px`,
-                transform: `translate(-50%, ${virtualRow.start}px)`,
+                height: `${size}px`,
+                transform: `translate(-50%, ${start}px)`,
               }}
               onClick={() => handleNavigation(pokemon.name)}
             >

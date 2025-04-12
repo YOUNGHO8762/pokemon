@@ -31,7 +31,7 @@ export const extractErrorMessage = (
   error: unknown,
   defaultMessage = 'Unexpected error',
 ): string => {
-  if (isAxiosError(error) || hasErrorMessage(error)) {
+  if (isAxiosError(error) || error instanceof Error || hasErrorMessage(error)) {
     return error.message;
   }
 
