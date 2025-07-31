@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getPokemonImageUrl, calculateLimit } from '@/pages/Pokemons';
+import { getPokemonImageUrl } from '@/pages/Pokemons';
+import { calculateLimit } from '@/hooks/usePokemons';
 
 describe('getPokemonImageUrl 함수', () => {
   it('올바른 포켓몬 이미지 URL을 생성해야 합니다.', () => {

@@ -1,8 +1,7 @@
 import { createBrowserRouter } from 'react-router';
-import queryClient from '@/queries/queryClient';
 import Error from '@/pages/Error';
-import Detail, { loader as detailLoader } from '@/pages/Detail';
-import Pokemons, { loader as listLoader } from '@/pages/Pokemons';
+import Detail from '@/pages/Detail';
+import Pokemons from '@/pages/Pokemons';
 
 const router = createBrowserRouter([
   {
@@ -12,12 +11,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Pokemons />,
-        loader: listLoader(queryClient),
       },
       {
         path: ':name',
         element: <Detail />,
-        loader: detailLoader(queryClient),
       },
     ],
   },
