@@ -1,27 +1,24 @@
 import { z } from 'zod';
 
-const SpritesSchema = z.object({
-  front_default: z.string(),
-});
-
-export const pokemonSchema = z.object({
+export const PokemonSchema = z.object({
   name: z.string(),
-  sprites: SpritesSchema,
+  sprites: z.object({
+    front_default: z.string(),
+  }),
   height: z.number(),
   weight: z.number(),
 });
-export type Pokemon = z.infer<typeof pokemonSchema>;
+export type Pokemon = z.infer<typeof PokemonSchema>;
 
-const PokemonSummarySchema = z.object({
-  name: z.string(),
-  url: z.string(),
-});
-export type PokemonSummary = z.infer<typeof PokemonSummarySchema>;
-
-export const pokemonsResponseSchema = z.object({
+export const PokemonsSchema = z.object({
   count: z.number(),
   next: z.string().nullable(),
   previous: z.string().nullable(),
-  results: z.array(PokemonSummarySchema),
+  results: z.array(
+    z.object({
+      name: z.string(),
+      url: z.string(),
+    }),
+  ),
 });
-export type PokemonsResponse = z.infer<typeof pokemonsResponseSchema>;
+export type Pokemons = z.infer<typeof PokemonsSchema>;

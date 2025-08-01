@@ -22,7 +22,7 @@ class HttpClient {
     const { success, data } = schema.safeParse(response);
 
     if (!success) {
-      throw new Error('Schema validation failed');
+      throw new Error('Invalid response from server');
     }
 
     return data;

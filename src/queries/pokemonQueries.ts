@@ -1,8 +1,8 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { DEFAULT_LIMIT, fetchPokemon, fetchPokemons } from '@/api/pokemonApis';
-import { PokemonsResponse } from '@/schemas/pokemonSchema';
+import { Pokemons } from '@/schemas/pokemonSchema';
 
-const extractNextPageOffset = (lastPage: PokemonsResponse) => {
+const extractNextPageOffset = (lastPage: Pokemons) => {
   const nextPage = lastPage.next;
   return nextPage
     ? Number(new URL(nextPage).searchParams.get('offset'))

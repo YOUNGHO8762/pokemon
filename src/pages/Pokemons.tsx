@@ -15,9 +15,8 @@ const Pokemons = () => {
   const { pokemons, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePokemonList();
   const { ref, virtualizer } = useInfiniteVirtualizer<HTMLDivElement>({
-    totalCount: pokemons.length,
-    itemHeight: POKEMON_ITEM_SIZE,
-    overscan: 20,
+    count: pokemons.length,
+    estimateSize: POKEMON_ITEM_SIZE,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
@@ -39,6 +38,7 @@ const Pokemons = () => {
       >
         {virtualizer.getVirtualItems().map(({ index, size, start }) => {
           const pokemon = pokemons[index];
+
           return (
             <li
               key={index}

@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import pokemonQueries from '@/queries/pokemonQueries';
 import { getStartIndexFromScroll } from '@/lib/utils';
 import { DEFAULT_LIMIT } from '@/api/pokemonApis';
@@ -16,12 +15,9 @@ export const usePokemonList = () => {
   const scrollY = sessionStorage.getItem('scrollY');
   const limit = calculateLimit(scrollY);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(pokemonQueries.list(limit));
+    useInfiniteQuery(pokemonQueries.list(limit));
 
-  const pokemons = useMemo(
-    () => data.pages.flatMap(page => page.results),
-    [data],
-  );
+  const pokemons = data ? data.pages.flatMap(page => page.results) : [];
 
   return {
     pokemons,
