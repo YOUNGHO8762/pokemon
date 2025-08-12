@@ -1,28 +1,23 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import pokemonQueries from '@/queries/pokemonQueries';
-import { getStartIndexFromScroll } from '@/lib/utils';
-import { DEFAULT_LIMIT } from '@/api/pokemonApis';
+import { useInfiniteVirtualizer } from '@/hooks/useInfiniteVirtualizer';
+import { useInfinitePokemons } from '@/hooks/useInfinitePokemons';
+import { useRestoreVirtualScroll } from '@/hooks/useRestoreVirtualScroll';
 import { POKEMON_ITEM_SIZE } from '@/pages/Pokemons';
 
-export const calculateLimit = (scrollY: string | null): number => {
-  return scrollY
-    ? getStartIndexFromScroll(Number(scrollY), POKEMON_ITEM_SIZE) +
-        DEFAULT_LIMIT
-    : DEFAULT_LIMIT;
-};
-
-export const usePokemonList = () => {
-  const scrollY = sessionStorage.getItem('scrollY');
-  const limit = calculateLimit(scrollY);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(pokemonQueries.list(limit));
-
-  const pokemons = data ? data.pages.flatMap(page => page.results) : [];
+export const usePokemons = () => {
+  const { pokemons, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfinitePokemons();
+  const { ref, virtualizer } = useInfiniteVirtualizer<HTMLDivElement>({
+    count: pokemons.length,
+    estimateSize: POKEMON_ITEM_SIZE,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
+  useRestoreVirtualScroll(virtualizer, 'scrollY');
 
   return {
     pokemons,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    ref,
+    virtualizer,
   };
 };

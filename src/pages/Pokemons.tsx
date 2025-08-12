@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router';
 import { getNthSubstring } from '@/lib/utils';
-import { usePokemonList } from '@/hooks/usePokemons';
-import { useInfiniteVirtualizer } from '@/hooks/useInfiniteVirtualizer';
-import { useRestoreVirtualScroll } from '@/hooks/useRestoreVirtualScroll';
+import { usePokemons } from '@/hooks/usePokemons';
 
 export const POKEMON_ITEM_SIZE = 40;
 
@@ -12,16 +10,7 @@ export const getPokemonImageUrl = (url: string): string => {
 };
 
 const Pokemons = () => {
-  const { pokemons, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    usePokemonList();
-  const { ref, virtualizer } = useInfiniteVirtualizer<HTMLDivElement>({
-    count: pokemons.length,
-    estimateSize: POKEMON_ITEM_SIZE,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  });
-  useRestoreVirtualScroll(virtualizer, 'scrollY');
+  const { pokemons, ref, virtualizer } = usePokemons();
   const navigate = useNavigate();
 
   const handleNavigation = (name: string) => {
@@ -51,7 +40,7 @@ const Pokemons = () => {
             >
               <img
                 src={getPokemonImageUrl(pokemon.url)}
-                alt={pokemon.name}
+                alt=""
                 style={{
                   width: `${POKEMON_ITEM_SIZE}px`,
                   height: `${POKEMON_ITEM_SIZE}px`,
