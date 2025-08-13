@@ -13,7 +13,7 @@ const Pokemons = () => {
   const { pokemons, ref, virtualizer } = usePokemons();
   const navigate = useNavigate();
 
-  const handleNavigation = (name: string) => {
+  const handlePokemonClick = (name: string) => {
     navigate(name, { state: virtualizer.scrollElement?.scrollTop });
   };
 
@@ -31,23 +31,28 @@ const Pokemons = () => {
           return (
             <li
               key={index}
-              className="absolute left-1/2 top-0 flex cursor-pointer items-center justify-center"
+              className="absolute left-1/2 top-0"
               style={{
                 height: `${size}px`,
                 transform: `translate(-50%, ${start}px)`,
               }}
-              onClick={() => handleNavigation(pokemon.name)}
             >
-              <img
-                src={getPokemonImageUrl(pokemon.url)}
-                alt=""
-                style={{
-                  width: `${POKEMON_ITEM_SIZE}px`,
-                  height: `${POKEMON_ITEM_SIZE}px`,
-                }}
-                className="mr-2"
-              />
-              {pokemon.name}
+              <button
+                className="flex items-center justify-center"
+                onClick={() => handlePokemonClick(pokemon.name)}
+                aria-label={`${pokemon.name} 상세보기`}
+              >
+                <img
+                  src={getPokemonImageUrl(pokemon.url)}
+                  alt=""
+                  style={{
+                    width: `${POKEMON_ITEM_SIZE}px`,
+                    height: `${POKEMON_ITEM_SIZE}px`,
+                  }}
+                  className="mr-2"
+                />
+                {pokemon.name}
+              </button>
             </li>
           );
         })}

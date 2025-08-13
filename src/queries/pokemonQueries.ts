@@ -24,7 +24,7 @@ const pokemonQueries = {
   details: () => [...pokemonQueries.all(), 'detail'],
   detail: (name: string) =>
     queryOptions({
-      queryKey: [...pokemonQueries.lists(), name],
+      queryKey: [...pokemonQueries.details(), name],
       queryFn: () => fetchPokemon(name),
     }),
 };

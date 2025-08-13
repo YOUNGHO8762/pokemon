@@ -8,10 +8,10 @@ import router from '@/router/Router';
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
       <Suspense fallback={null}>
         <RouterProvider router={router} />
       </Suspense>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };
