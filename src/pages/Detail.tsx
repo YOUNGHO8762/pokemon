@@ -6,6 +6,8 @@ import {
 } from 'react-router';
 import { useNavigationCallback } from '@/hooks/useNavigationCallback';
 import { usePokemon } from '@/hooks/usePokemon';
+import { saveScrollPosition } from '@/lib/scrollRestore';
+import { SCROLL_RESTORE_KEY } from '@/constants';
 
 const Detail = () => {
   const { name } = useParams();
@@ -16,11 +18,16 @@ const Detail = () => {
 
   const pokemon = usePokemon(name);
   const { state: scrollY } = useLocation();
-  useNavigationCallback(
-    () => sessionStorage.setItem('scrollY', scrollY),
-    NavigationType.Pop,
-  );
+  const saveScrollForRestore = () =>
+    saveScrollPosition(SCROLL_RESTORE_KEY, scrollY);
+
+  useNavigationCallback(saveScrollForRestore, NavigationType.Pop);
   const navigate = useNavigate();
+
+  const handleBackToList = () => {
+    saveScrollForRestore();
+    navigate('/');
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100">
@@ -33,7 +40,7 @@ const Detail = () => {
       <p>키: {pokemon.height}</p>
       <p>몸무게: {pokemon.weight}</p>
       <button
-        onClick={() => navigate('/')}
+        onClick={handleBackToList}
         className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
       >
         목록으로

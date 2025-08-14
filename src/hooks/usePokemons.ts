@@ -1,7 +1,7 @@
 import { useInfiniteVirtualizer } from '@/hooks/useInfiniteVirtualizer';
 import { useInfinitePokemons } from '@/hooks/useInfinitePokemons';
+import { SCROLL_RESTORE_KEY, POKEMON_ITEM_SIZE } from '@/constants';
 import { useRestoreVirtualScroll } from '@/hooks/useRestoreVirtualScroll';
-import { POKEMON_ITEM_SIZE } from '@/pages/Pokemons';
 
 export const usePokemons = () => {
   const { pokemons, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -13,7 +13,7 @@ export const usePokemons = () => {
     isFetchingNextPage,
     fetchNextPage,
   });
-  useRestoreVirtualScroll(virtualizer, 'scrollY');
+  useRestoreVirtualScroll(virtualizer, SCROLL_RESTORE_KEY);
 
   return {
     pokemons,

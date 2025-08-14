@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router';
+import { POKEMON_ITEM_SIZE } from '@/constants';
 import { getNthSubstring } from '@/lib/utils';
 import { usePokemons } from '@/hooks/usePokemons';
-
-export const POKEMON_ITEM_SIZE = 40;
 
 export const getPokemonImageUrl = (url: string): string => {
   const id = getNthSubstring(url, '/', -2);

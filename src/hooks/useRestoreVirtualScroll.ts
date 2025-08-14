@@ -1,12 +1,13 @@
 import { Virtualizer } from '@tanstack/react-virtual';
 import { useEffect } from 'react';
+import { clearScrollPosition, getScrollPosition } from '@/lib/scrollRestore';
 
 export const useRestoreVirtualScroll = <T extends HTMLElement>(
   virtualizer: Virtualizer<T, Element>,
   key: string,
 ) => {
   useEffect(() => {
-    const savedPosition = sessionStorage.getItem(key);
+    const savedPosition = getScrollPosition(key);
 
     if (!savedPosition) {
       return;
@@ -14,7 +15,7 @@ export const useRestoreVirtualScroll = <T extends HTMLElement>(
 
     (async () => {
       await virtualizer.scrollToOffset(Number(savedPosition));
-      sessionStorage.removeItem(key);
+      clearScrollPosition(key);
     })();
   }, [virtualizer, key]);
 };

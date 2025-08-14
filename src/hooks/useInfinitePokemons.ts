@@ -1,18 +1,18 @@
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import pokemonQueries from '@/queries/pokemonQueries';
+import { POKEMON_PAGE_SIZE, POKEMON_ITEM_SIZE, SCROLL_RESTORE_KEY } from '@/constants';
+import { getScrollPosition } from '@/lib/scrollRestore';
 import { getStartIndexFromScroll } from '@/lib/utils';
-import { DEFAULT_LIMIT } from '@/api/pokemonApis';
-import { POKEMON_ITEM_SIZE } from '@/pages/Pokemons';
 
 export const calculateLimit = (scrollY: string | null): number => {
   return scrollY
     ? getStartIndexFromScroll(Number(scrollY), POKEMON_ITEM_SIZE) +
-        DEFAULT_LIMIT
-    : DEFAULT_LIMIT;
+        POKEMON_PAGE_SIZE
+    : POKEMON_PAGE_SIZE;
 };
 
 export const useInfinitePokemons = () => {
-  const scrollY = sessionStorage.getItem('scrollY');
+  const scrollY = getScrollPosition(SCROLL_RESTORE_KEY);
   const limit = calculateLimit(scrollY);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(pokemonQueries.list(limit));

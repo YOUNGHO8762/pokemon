@@ -1,5 +1,6 @@
 import { httpClient } from '@/api/httpClient';
 import { POKEMON } from '@/api/endpoints';
+import { POKEMON_PAGE_SIZE } from '@/constants';
 import {
   Pokemon,
   PokemonSchema,
@@ -7,11 +8,9 @@ import {
   Pokemons,
 } from '@/schemas/pokemonSchema';
 
-export const DEFAULT_LIMIT = 30;
-
 export const fetchPokemons = (
   offset: number,
-  limit = DEFAULT_LIMIT,
+  limit = POKEMON_PAGE_SIZE,
 ): Promise<Pokemons> => {
   return httpClient.getAndValidate<Pokemons>(POKEMON, PokemonsSchema, {
     params: { limit, offset },

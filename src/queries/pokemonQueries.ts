@@ -1,5 +1,6 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { DEFAULT_LIMIT, fetchPokemon, fetchPokemons } from '@/api/pokemonApis';
+import { fetchPokemon, fetchPokemons } from '@/api/pokemonApis';
+import { POKEMON_PAGE_SIZE } from '@/constants';
 import { Pokemons } from '@/schemas/pokemonSchema';
 
 const extractNextPageOffset = (lastPage: Pokemons) => {
@@ -12,7 +13,7 @@ const extractNextPageOffset = (lastPage: Pokemons) => {
 const pokemonQueries = {
   all: () => ['pokemon'],
   lists: () => [...pokemonQueries.all(), 'list'],
-  list: (limit = DEFAULT_LIMIT) =>
+  list: (limit = POKEMON_PAGE_SIZE) =>
     infiniteQueryOptions({
       queryKey: [...pokemonQueries.lists()],
       queryFn: ({ pageParam }) => {
